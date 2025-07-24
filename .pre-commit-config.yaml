@@ -1,0 +1,26 @@
+repos:
+  # 저장소 1: 기본적인 pre-commit 훅 모음
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0 # 사용할 훅들의 버전 지정
+    hooks:
+      # 추가된 파일 중 용량이 큰 파일이 있는지 검사 (실수로 바이너리 파일 등 커밋 방지)
+      - id: check-added-large-files
+      # TOML 파일 문법 검사 (pyproject.toml 등)
+      - id: check-toml
+      # YAML 파일 문법 검사 (.pre-commit-config.yaml 등)
+      - id: check-yaml
+        args:
+          - --unsafe # 일부 복잡한 YAML 구조를 위해 필요할 수 있으나, 신뢰할 수 없는 YAML에는 주의 필요
+      # 파일 끝에 개행 문자(newline)가 하나만 있도록 수정
+      - id: end-of-file-fixer
+      # 코드 라인 끝의 불필요한 공백 제거
+      - id: trailing-whitespace
+  -   repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff 버전은 pyproject.toml과 맞추거나 최신 버전 명시
+      rev: v0.11.6 # 예시 버전, 최신 릴리즈 확인 후 사용
+      hooks:
+        # ruff 포맷터 실행
+        -   id: ruff-format
+        # ruff 린터 실행 (자동 수정 포함)
+        -   id: ruff
+            args: [--fix, --exit-non-zero-on-fix] # 수정 사항 있으면 커밋 실패 처리

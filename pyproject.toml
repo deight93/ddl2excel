@@ -1,0 +1,62 @@
+[project]
+name = "ddl2excel"
+version = "0.1.0"
+description = "DDL to Excel"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openpyxl>=3.1.5",
+    "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "ruff>=0.12.4",
+    "typer>=0.16.0",
+]
+
+
+[tool.ruff]
+target-version = "py311"
+exclude = ["venv", ".venv", "migrations"] # Ruff 검사에서 제외할 디렉토리
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+select = [
+    "E", # E, W: pycodestyle (기본 PEP 8 위반)
+    "W", # E, W: pycodestyle (기본 PEP 8 위반)
+    "F", # F: Pyflakes (논리적 오류, 미사용 변수/임포트 등)
+    "I", # I: isort (임포트 순서 정렬) -> isort 대체
+    "N", # N: pep8-naming (변수/함수/클래스 이름 규칙)
+    "UP", # UP: pyupgrade (최신 파이썬 문법 사용 제안)
+    "B", # B: flake8-bugbear (버그 가능성 있는 코드나 복잡한 코드)
+    "A", # A: flake8-builtins (내장 함수/타입 이름 재정의 금지)
+    "C4", # C4: flake8-comprehensions (불필요하게 복잡한 컴프리헨션 개선)
+    "T20", # T20: flake8-print (print 문 사용 감지 - 로깅 사용 권장)
+    "SIM", # SIM: flake8-simplify (코드 단순화 제안)
+    "PTH"# PTH: flake8-use-pathlib (os.path 대신 pathlib 사용 권장)
+]
+ignore = [
+    "B008",  # 함수 기본 인자 값으로 함수 호출 허용 (때때로 필요하지만 위험할 수 있음)
+    "W191",  # 탭 문자를 이용한 들여쓰기 허용 (일반적으로 스페이스 4칸 권장)
+    "B904",  # HTTPException 등에서 'raise ... from e' 없이 예외 발생 허용 (FastAPI 패턴)
+    "E501",
+]
+
+# (`--fix`가 제공된 경우) 모든 활성화된 규칙에 대한 수정을 허용합니다.
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.format]
+quote-style = "double" # 문자열 따옴표 스타일 (" 또는 ')
+indent-style = "space" # 들여쓰기 스타일 (space 또는 tab)
+skip-magic-trailing-comma = false # 매직 트레일링 콤마 사용 (Black 기본값)
+line-ending = "auto" # 운영체제에 맞는 라인 엔딩 자동 감지 및 사용 (LF 또는 CRLF)
+
+# --- Ruff 린터의 pyupgrade 규칙 세부 설정 ---
+[tool.ruff.lint.pyupgrade]
+# `from __future__ import annotations` 사용 시에도 런타임에 필요한 타입 어노테이션 유지
+# Pydantic 등 런타임 타입 정보가 중요한 라이브러리에 필수적
+keep-runtime-typing = true
+
+[tool.ruff.lint.pep8-naming]
+# Allow Pydantic's `@validator` decorator to trigger class method treatment.
+classmethod-decorators = ["classmethod", "pydantic.field_validator"]
