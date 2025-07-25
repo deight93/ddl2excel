@@ -8,6 +8,17 @@ A CLI tool that converts SQL DDL files to structured Excel table specification s
 > **Currently, only PostgreSQL DDL is supported.**
 > Other DBMS (MySQL, Oracle, etc.) are not supported yet.
 
+
+## Demo
+
+### Command-line Usage Example
+
+![Command-line usage](img/cmd-view.png)
+
+### Excel Output Example
+
+![Excel output example](img/excel-view.png)
+
 ## Requirements
 
 - Python 3.12+

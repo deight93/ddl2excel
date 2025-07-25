@@ -6,6 +6,16 @@ SQL DDL 파일을 엑셀 테이블 명세서로 변환하는 Python CLI 도구�
 > **현재는 PostgreSQL DDL만 지원합니다.**
 > (MySQL, Oracle 등은 아직 지원하지 않습니다.)
 
+## 사용 예시
+
+### 커맨드라인 실행 화면
+
+![커맨드라인 사용 예시](img/cmd-view.png)
+
+### 엑셀 결과 예시
+
+![엑셀 결과 예시](img/excel-view.png)
+
 ## 요구사항
 
 - Python 3.12+
