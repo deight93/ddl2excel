@@ -4,6 +4,10 @@
 
 A CLI tool that converts SQL DDL files to structured Excel table specification sheets.
 
+> **Note:**
+> **Currently, only PostgreSQL DDL is supported.**
+> Other DBMS (MySQL, Oracle, etc.) are not supported yet.
+
 ## Requirements
 
 - Python 3.12+
@@ -50,6 +54,28 @@ uv run python -m app.main DDL.sql output.xlsx --lang en
 
 **Note:**
 You cannot specify file arguments and `--dir` option at the same time.
+
+## Interactive Meta Fields Input
+
+When you run the tool, you will be prompted:
+
+Would you like to input table meta fields interactively? [y/N]:
+- Enter `y` and press Enter to interactively input meta fields such as System/Service, Author, DBMS, etc.
+- Press Enter (or input anything else) to skip and leave them blank.
+
+```bash
+uv run python -m app.main DDL.sql output.xlsx
+
+# Sample prompt:
+Would you like to input table meta fields interactively? [y/N]: y
+System/Service: My Service
+Author: John Doe
+Date: 2024-07-25
+Project:
+DBMS: PostgreSQL
+DB Name: demo_db
+Schema Name: public
+```
 
 ## Options
 

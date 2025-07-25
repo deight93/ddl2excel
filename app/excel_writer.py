@@ -15,6 +15,8 @@ from app.const import (
     COLUMN_HEADERS_EN,
     COLUMN_HEADERS_KO,
     COLUMN_WIDTHS,
+    DATA_PERIOD_HEADERS_EN,
+    DATA_PERIOD_HEADERS_KO,
     FILL_GRAY,
     FILL_HEADER,
     FILL_YELLOW,
@@ -52,10 +54,13 @@ def write_title(ws, row_idx, lang):
     return row_idx + 1
 
 
-def write_meta(ws, table_spec, row_idx, lang):
+def write_meta(ws, table_spec, row_idx, lang, meta_field_values):
     """2. 상단 메타정보 영역 작성"""
     meta_fields = META_FIELDS_KO if lang == "ko" else META_FIELDS_EN
-    meta_values = [""] * 7 + [table_spec["table_name"], table_spec["table_comment"]]
+    meta_values = meta_field_values + [
+        table_spec["table_name"],
+        table_spec["table_comment"],
+    ]
     for meta_idx, (meta_field, meta_value) in enumerate(
         zip(meta_fields, meta_values, strict=False)
     ):
@@ -83,15 +88,17 @@ def write_meta(ws, table_spec, row_idx, lang):
     return row_idx
 
 
-def write_data_period(ws, row_idx):
-    """3. 데이터 건수/주기 등 병합/헤더"""
+def write_data_period(ws, row_idx, lang):
+    """3. 데이터 건수/주기 등 병합/헤더 (영어/한글 지원)"""
+    headers = DATA_PERIOD_HEADERS_KO if lang == "ko" else DATA_PERIOD_HEADERS_EN
+
     # 헤더
     merge_and_style(
         ws,
         row_idx,
         BASE_COL,
         BASE_COL + 2,
-        "초기 예상 건수",
+        headers[0],
         font=BOLD_FONT,
         fill=FILL_HEADER,
         align=CENTER_ALIGN,
@@ -102,7 +109,7 @@ def write_data_period(ws, row_idx):
         row_idx,
         BASE_COL + 3,
         BASE_COL + 4,
-        "증가 예상 건수",
+        headers[1],
         font=BOLD_FONT,
         fill=FILL_HEADER,
         align=CENTER_ALIGN,
@@ -113,7 +120,7 @@ def write_data_period(ws, row_idx):
         row_idx,
         BASE_COL + 5,
         BASE_COL + 6,
-        "최대 예상 건수",
+        headers[2],
         font=BOLD_FONT,
         fill=FILL_HEADER,
         align=CENTER_ALIGN,
@@ -124,7 +131,7 @@ def write_data_period(ws, row_idx):
         row_idx,
         BASE_COL + 7,
         BASE_COL + 9,
-        "data 보존 기간",
+        headers[3],
         font=BOLD_FONT,
         fill=FILL_HEADER,
         align=CENTER_ALIGN,
@@ -135,14 +142,14 @@ def write_data_period(ws, row_idx):
         row_idx,
         BASE_COL + 10,
         BASE_COL + 11,
-        "data 백업 주기",
+        headers[4],
         font=BOLD_FONT,
         fill=FILL_HEADER,
         align=CENTER_ALIGN,
         border=BORDER_THIN,
     )
     row_idx += 1
-    # 값 라인
+    # 값 라인 (예시는 한글/영어 모두 동일, 추후 분기 필요시 분리)
     merge_and_style(
         ws, row_idx, BASE_COL, BASE_COL + 2, "", align=LEFT_ALIGN, border=BORDER_THIN
     )
@@ -169,7 +176,7 @@ def write_data_period(ws, row_idx):
         row_idx,
         BASE_COL + 7,
         BASE_COL + 9,
-        "5년",
+        "5년" if lang == "ko" else "5 years",
         align=LEFT_ALIGN,
         border=BORDER_THIN,
     )
@@ -178,7 +185,7 @@ def write_data_period(ws, row_idx):
         row_idx,
         BASE_COL + 10,
         BASE_COL + 11,
-        "1년",
+        "1년" if lang == "ko" else "1 year",
         align=LEFT_ALIGN,
         border=BORDER_THIN,
     )
@@ -203,7 +210,8 @@ def write_column_headers(ws, row_idx, lang):
         end_row=row_idx,
         end_column=BASE_COL + 9,
     )
-    ws.cell(row_idx, BASE_COL + 7).value = "정의/설명"
+    desc_label = column_headers[7]
+    ws.cell(row_idx, BASE_COL + 7).value = desc_label
     set_row_style(
         ws,
         row_idx,
@@ -339,14 +347,14 @@ def set_column_widths(ws):
         ws.column_dimensions[get_column_letter(col_num)].width = width
 
 
-def write_table_sheet(ws, table_spec, lang):
+def write_table_sheet(ws, table_spec, lang, meta_field_values):
     """
     테이블 단위 시트 작성 (모든 블록 호출)
     """
     row = BASE_ROW
     row = write_title(ws, row, lang)
-    row = write_meta(ws, table_spec, row, lang)
-    row = write_data_period(ws, row)
+    row = write_meta(ws, table_spec, row, lang, meta_field_values)
+    row = write_data_period(ws, row, lang)
     row = write_column_headers(ws, row, lang)
     row = write_columns(ws, table_spec, row)
     row = write_index(ws, row, lang)
@@ -354,7 +362,10 @@ def write_table_sheet(ws, table_spec, lang):
 
 
 def write_excel_spec(
-    table_spec_dict: dict[str, Any], output_excel_path: Path, lang: str
+    table_spec_dict: dict[str, Any],
+    output_excel_path: Path,
+    lang: str,
+    meta_field_values: list,
 ):
     """
     메인: 전체 엑셀 파일 생성, 각 시트 작성
@@ -365,5 +376,7 @@ def write_excel_spec(
         for table_spec in table_list:
             ws = wb.create_sheet(title=f"{sheet_name}_{table_spec['table_name']}"[:31])
             ws.sheet_view.zoomScale = 85
-            write_table_sheet(ws, table_spec, lang=lang)
+            write_table_sheet(
+                ws, table_spec, lang=lang, meta_field_values=meta_field_values
+            )
     wb.save(output_excel_path)

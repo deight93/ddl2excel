@@ -2,6 +2,10 @@
 
 SQL DDL 파일을 엑셀 테이블 명세서로 변환하는 Python CLI 도구입니다.
 
+> **참고:**
+> **현재는 PostgreSQL DDL만 지원합니다.**
+> (MySQL, Oracle 등은 아직 지원하지 않습니다.)
+
 ## 요구사항
 
 - Python 3.12+
@@ -44,6 +48,28 @@ uv run python -m app.main DDL.sql output.xlsx --lang en
 
 **참고:**
 파일 인자와 `--dir` 옵션을 동시에 사용할 수 없습니다.
+
+## 인터랙티브 메타 입력 안내
+
+프로그램을 실행하면 아래와 같이 프롬프트가 표시됩니다.
+
+Would you like to input table meta fields interactively? [y/N]:
+- `y`를 입력하면, 시스템/서비스, 작성자, DBMS 등 주요 메타 정보를 직접 입력할 수 있습니다.
+- 엔터(또는 다른 값을 입력)만 치면 모두 빈칸으로 처리됩니다.
+
+```bash
+uv run python -m app.main DDL.sql output.xlsx
+
+# 예시 프롬프트:
+Would you like to input table meta fields interactively? [y/N]: y
+시스템/서비스: 내 서비스
+작성자: 홍길동
+작성일: 2024-07-25
+프로젝트명:
+DBMS: PostgreSQL
+DB 이름: demo_db
+스키마명: public
+````
 
 ## 주요 옵션
 
