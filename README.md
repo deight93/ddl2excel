@@ -1,43 +1,51 @@
 # ddl2excel
 
-[한국어 안내(README in Korean)](./README.ko.md)
+[README in Korean (한국어 안내)](./README.ko.md)
 
 A CLI tool that converts SQL DDL files to structured Excel table specification sheets.
-
-## Features
-
-- Supports multiple `.sql` files and directory input
-- Each file is output as a separate Excel sheet
-- Column/metadata/index headers in both Korean and English (selectable with `--lang`)
-- Clean, maintainable Python codebase (no star imports)
-- CLI with helpful error messages, English-by-default
-- Extensible, production-ready code structure
 
 ## Requirements
 
 - Python 3.12+
-- [openpyxl](https://openpyxl.readthedocs.io/)
-- [typer](https://typer.tiangolo.com/)
+- [uv](https://github.com/astral-sh/uv) (recommended for venv and dependency management)
 
-Install dependencies:
+## Quickstart (No Build/Install Needed)
+
 ```bash
-pip install -r requirements.txt
+# 1. Create a virtual environment with uv
+uv venv
+
+# 2. Install all dependencies (from pyproject.toml/requirements.txt)
+uv sync
+
+# 3. Run directly (no build step needed)
+uv run python -m app.main --help
+
+# Example usage:
+uv run python -m app.main DDL.sql output.xlsx
+uv run python -m app.main --dir ./ddls output.xlsx --lang en
 ````
+
+## Why uv?
+
+* Fast, reproducible dependency installation (`uv sync`)
+* venv isolation, zero global pollution
+* No build or install step required—just manage dependencies and run
 
 ## Usage
 
 ```bash
 # Convert a single .sql file to Excel
-python app/cli.py DDL.sql output.xlsx
+uv run python -m app.main DDL.sql output.xlsx
 
 # Convert multiple .sql files to Excel (each as a sheet)
-python app/cli.py table1.sql table2.sql output.xlsx
+uv run python -m app.main table1.sql table2.sql output.xlsx
 
 # Convert all .sql files in a directory
-python app/cli.py --dir ./ddls output.xlsx
+uv run python -m app.main --dir ./ddls output.xlsx
 
 # Select header language (default: Korean, options: ko, en)
-python app/cli.py DDL.sql output.xlsx --lang en
+uv run python -m app.main DDL.sql output.xlsx --lang en
 ```
 
 **Note:**
@@ -52,29 +60,13 @@ You cannot specify file arguments and `--dir` option at the same time.
 | --lang, -l | Excel sheet header/title language: `ko` (Korean, default) or `en` (English) |
 | OUTPUT     | Output Excel file path                                                      |
 
-## Error Handling
-
-* If both file arguments and `--dir` are given, the tool will exit with an error.
-* If any file or directory does not exist, or if a directory is passed as a file, a helpful error message is shown.
-* Only `.sql` files are processed.
-
-## Example Output
-
-* Each Excel sheet includes:
-
-    * Table specification title
-    * Metadata (system/service, author, project, etc.)
-    * Column definitions
-    * Index info (PK example)
-    * All headers and field names in your selected language
-
 ## Project Structure
 
 ```
 app/
-  ├── cli.py           # Command-line interface
-  ├── const.py         # All style/label constants (multi-language)
-  ├── excel_writer.py  # Excel writing logic
-  ├── parser.py        # DDL parser logic
-  └── utils.py         # Excel style/merge helpers
+  ├── main.py           # Command-line interface (entrypoint)
+  ├── const.py          # All style/label constants (multi-language)
+  ├── excel_writer.py   # Excel writing logic
+  ├── parser.py         # DDL parser logic
+  └── utils.py          # Excel style/merge helpers
 ```
