@@ -2,7 +2,10 @@ import re
 from pathlib import Path
 from typing import Any
 
-from const import (
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
+
+from app.const import (
     BASE_COL,
     BASE_ROW,
     BOLD_FONT,
@@ -23,9 +26,7 @@ from const import (
     TABLE_SPEC_TITLE_EN,
     TABLE_SPEC_TITLE_KO,
 )
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-from utils import merge_and_style, set_row_style
+from app.utils import merge_and_style, set_row_style
 
 
 def extract_length_from_type(type_str: str) -> str:

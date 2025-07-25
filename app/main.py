@@ -1,8 +1,9 @@
 from pathlib import Path
 
 import typer
-from excel_writer import write_excel_spec
-from parser import parse_ddl_file
+
+from app.excel_writer import write_excel_spec
+from app.parser import parse_ddl_file
 
 app = typer.Typer(
     help="DDL → Excel Table Specification Converter (DDL → 엑셀 테이블 스펙 변환기)"
