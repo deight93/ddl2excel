@@ -2,6 +2,7 @@ from pathlib import Path
 
 import typer
 
+from app.const import META_FIELDS_EN, META_FIELDS_KO
 from app.excel_writer import write_excel_spec
 from app.parser import parse_ddl_file
 
@@ -41,6 +42,16 @@ def collect_sql_files(
             sql_file_list.append(path)
 
     return sql_file_list
+
+
+def prompt_meta_fields(lang: str):
+    meta_fields = META_FIELDS_KO if lang == "ko" else META_FIELDS_EN
+    meta_fields = meta_fields[:7]
+    results = []
+    for label in meta_fields:
+        value = input(f"{label}: ").strip()
+        results.append(value)
+    return results
 
 
 @app.command()
@@ -102,8 +113,21 @@ def main(
         sheet_name = sql_file_path.stem
         table_spec_dict[sheet_name] = table_list
 
+    typer.echo(
+        "Would you like to input table meta fields interactively? [y/N]: ", nl=False
+    )
+    if input().strip().lower() == "y":
+        meta_field_values = prompt_meta_fields(lang)
+    else:
+        meta_field_values = [""] * 7
+
     try:
-        write_excel_spec(table_spec_dict, output_excel_path, lang=lang)
+        write_excel_spec(
+            table_spec_dict,
+            output_excel_path,
+            lang=lang,
+            meta_field_values=meta_field_values,
+        )
     except Exception as e:
         typer.echo(f"[ERROR] Failed to write Excel file: {output_excel_path}\n{e}")
         raise typer.Exit(1)

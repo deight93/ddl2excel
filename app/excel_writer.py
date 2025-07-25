@@ -54,10 +54,13 @@ def write_title(ws, row_idx, lang):
     return row_idx + 1
 
 
-def write_meta(ws, table_spec, row_idx, lang):
+def write_meta(ws, table_spec, row_idx, lang, meta_field_values):
     """2. 상단 메타정보 영역 작성"""
     meta_fields = META_FIELDS_KO if lang == "ko" else META_FIELDS_EN
-    meta_values = [""] * 7 + [table_spec["table_name"], table_spec["table_comment"]]
+    meta_values = meta_field_values + [
+        table_spec["table_name"],
+        table_spec["table_comment"],
+    ]
     for meta_idx, (meta_field, meta_value) in enumerate(
         zip(meta_fields, meta_values, strict=False)
     ):
@@ -344,13 +347,13 @@ def set_column_widths(ws):
         ws.column_dimensions[get_column_letter(col_num)].width = width
 
 
-def write_table_sheet(ws, table_spec, lang):
+def write_table_sheet(ws, table_spec, lang, meta_field_values):
     """
     테이블 단위 시트 작성 (모든 블록 호출)
     """
     row = BASE_ROW
     row = write_title(ws, row, lang)
-    row = write_meta(ws, table_spec, row, lang)
+    row = write_meta(ws, table_spec, row, lang, meta_field_values)
     row = write_data_period(ws, row, lang)
     row = write_column_headers(ws, row, lang)
     row = write_columns(ws, table_spec, row)
@@ -359,7 +362,10 @@ def write_table_sheet(ws, table_spec, lang):
 
 
 def write_excel_spec(
-    table_spec_dict: dict[str, Any], output_excel_path: Path, lang: str
+    table_spec_dict: dict[str, Any],
+    output_excel_path: Path,
+    lang: str,
+    meta_field_values: list,
 ):
     """
     메인: 전체 엑셀 파일 생성, 각 시트 작성
@@ -370,5 +376,7 @@ def write_excel_spec(
         for table_spec in table_list:
             ws = wb.create_sheet(title=f"{sheet_name}_{table_spec['table_name']}"[:31])
             ws.sheet_view.zoomScale = 85
-            write_table_sheet(ws, table_spec, lang=lang)
+            write_table_sheet(
+                ws, table_spec, lang=lang, meta_field_values=meta_field_values
+            )
     wb.save(output_excel_path)
